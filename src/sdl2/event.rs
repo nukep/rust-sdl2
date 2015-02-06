@@ -9,6 +9,7 @@ use std::num::FromPrimitive;
 use std::ptr;
 use std::borrow::ToOwned;
 use std::sync::atomic::{AtomicBool, ATOMIC_BOOL_INIT};
+use std::iter::FromIterator;
 
 use controller;
 use controller::{Axis, Button};
@@ -883,8 +884,35 @@ impl EventQueue {
         unsafe { ll::SDL_FlushEvents(min_type, max_type) };
     }
 
-    pub fn peek_events(&self, max_amount: u32) -> Vec<Event> {
-        unimplemented!();
+    pub fn peek_events<B>(&self, max_amount: u32) -> B
+    where B: FromIterator<Event>
+    {
+        unsafe {
+            let mut events = Vec::with_capacity(max_amount as usize);
+
+            let result = {
+                let events_ptr = events.as_mut_slice().as_mut_ptr();
+
+                ll::SDL_PeepEvents(
+                    events_ptr,
+                    max_amount as c_int,
+                    ll::SDL_PEEKEVENT,
+                    ll::SDL_FIRSTEVENT,
+                    ll::SDL_LASTEVENT
+                )
+            };
+
+            if result < 0 {
+                // The only error possible is "Couldn't lock event queue"
+                panic!(get_error());
+            } else {
+                events.set_len(max_amount as usize);
+
+                events.iter().map(|event_raw| {
+                    Event::from_ll(event_raw)
+                }).collect()
+            }
+        }
     }
 
     pub fn poll_event(&mut self) -> Option<Event> {
