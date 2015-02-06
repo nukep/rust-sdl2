@@ -8,6 +8,7 @@ use libc::{c_int, c_void, uint32_t};
 use std::num::FromPrimitive;
 use std::ptr;
 use std::borrow::ToOwned;
+use std::sync::atomic::{AtomicBool, ATOMIC_BOOL_INIT};
 
 use controller;
 use controller::{Axis, Button};
@@ -841,121 +842,120 @@ impl Event {
     }
 }
 
-/// Pump the event loop, gathering events from the input devices.
-pub fn pump_events() {
-    unsafe { ll::SDL_PumpEvents(); }
-}
+/// A data type representing the SDL's event queue
 
-/// Check for the existence of certain event types in the event queue.
-pub fn has_event(_type: EventType) -> bool {
-    unsafe { ll::SDL_HasEvent(_type as uint32_t ) == 1 }
-}
+// The event queue _cannot_ be copied, regardless of what the lint thinks!
+#[allow(missing_copy_implementations)]
+pub struct EventQueue;
 
-/// Check for the existence of a range of event types in the event queue.
-pub fn has_events(min: EventType, max: EventType) -> bool {
-    unsafe { ll::SDL_HasEvents(min as uint32_t, max as uint32_t) == 1 }
-}
+/// Prevents the event queue from moving to other threads.
+/// The event queue cannot be updated (without locks) on a non-main thread.
+impl !Send for EventQueue {}
 
-/// Clear events from the event queue.
-pub fn flush_event(_type: EventType) {
-    unsafe { ll::SDL_FlushEvent(_type as uint32_t) }
-}
+/// Allows the event queue to be read from other threads.
+/// `EventQueue::peek_events()` can be used, for example.
+unsafe impl Sync for EventQueue {}
 
-/// Clear events from the event queue of a range of event types.
-pub fn flush_events(min: EventType, max: EventType) {
-    unsafe { ll::SDL_FlushEvents(min as uint32_t, max as uint32_t) }
-}
+/// Set to false by default (not alive).
+static IS_EVENT_QUEUE_ALIVE: AtomicBool = ATOMIC_BOOL_INIT;
 
-/// Poll for currently pending events.
-pub fn poll_event() -> Option<Event> {
-    let raw = unsafe { mem::uninitialized() };
-    let has_pending = unsafe { ll::SDL_PollEvent(&raw) == 1 as c_int };
+impl EventQueue {
+    /// # Panic
+    /// The method will panic if an existing EventQueue is alive in the
+    /// application.
+    pub fn new() -> EventQueue {
+        use std::sync::atomic::Ordering;
 
-    if has_pending { Some(Event::from_ll(&raw)) }
-    else { None }
-}
+        let was_alive = IS_EVENT_QUEUE_ALIVE.swap(true, Ordering::Relaxed);
 
-/// Wait indefinitely for the next available event.
-pub fn wait_event() -> SdlResult<Event> {
-    let raw = unsafe { mem::uninitialized() };
-    let success = unsafe { ll::SDL_WaitEvent(&raw) == 1 as c_int };
+        if was_alive {
+            panic!("Cannot have more than one `EventQueue` in use at the same time")
+        } else {
+            EventQueue
+        }
+    }
 
-    if success { Ok(Event::from_ll(&raw)) }
-    else { Err(get_error()) }
-}
+    pub fn flush_event(&self, event_type: EventType) {
+        unsafe { ll::SDL_FlushEvent(event_type as uint32_t) };
+    }
 
-/// Wait until the specified timeout (in milliseconds) for the next available event.
-pub fn wait_event_timeout(timeout: i32) -> SdlResult<Event> {
-    let raw = unsafe { mem::uninitialized() };
-    let success = unsafe { ll::SDL_WaitEventTimeout(&raw, timeout as c_int) ==
-                           1 as c_int };
+    pub fn flush_events(&self, min_type: u32, max_type: u32) {
+        unsafe { ll::SDL_FlushEvents(min_type, max_type) };
+    }
 
-    if success { Ok(Event::from_ll(&raw)) }
-    else { Err(get_error()) }
-}
+    pub fn peek_events(&self, max_amount: u32) -> Vec<Event> {
+        unimplemented!();
+    }
 
-extern "C" fn event_filter_wrapper(userdata: *const c_void, event: *const ll::SDL_Event) -> c_int {
-    let filter: extern fn(event: Event) -> bool = unsafe { mem::transmute(userdata) };
-    if event.is_null() { 1 }
-    else { filter(Event::from_ll(unsafe { &*event })) as c_int }
-}
+    pub fn poll_event(&mut self) -> Option<Event> {
+        let raw = unsafe { mem::uninitialized() };
+        let has_pending = unsafe { ll::SDL_PollEvent(&raw) == 1 as c_int };
 
-/// Set up a filter to process all events before they change internal state and are posted to the internal event queue.
-pub fn set_event_filter(filter_func: extern fn(event: Event) -> bool) {
-    unsafe { ll::SDL_SetEventFilter(event_filter_wrapper,
-                                    filter_func as *const _) }
-}
+        if has_pending { Some(Event::from_ll(&raw)) }
+        else { None }
+    }
 
-/// Add a callback to be triggered when an event is added to the event queue.
-pub fn add_event_watch(filter_func: extern fn(event: Event) -> bool) {
-    unsafe { ll::SDL_AddEventWatch(event_filter_wrapper,
-                                   filter_func as *const _) }
-}
+    pub fn poll_iter(&mut self) -> EventQueuePollIterator {
+        EventQueuePollIterator {
+            event_queue: self
+        }
+    }
 
-/// Remove an event watch callback added.
-pub fn delete_event_watch(filter_func: extern fn(event: Event) -> bool) {
-    unsafe { ll::SDL_DelEventWatch(event_filter_wrapper,
-                                   filter_func as *const _) }
-}
+    pub fn pump_events(&mut self) {
+        unsafe { ll::SDL_PumpEvents(); };
+    }
 
-/// Run a specific filter function on the current event queue, removing any events for which the filter returns 0.
-pub fn filter_events(filter_func: extern fn(event: Event) -> bool) {
-    unsafe { ll::SDL_FilterEvents(event_filter_wrapper,
-                                  filter_func as *const _) }
-}
+    pub fn push_event(&self, event: Event) -> SdlResult<()> {
+        match event.to_ll() {
+            Some(raw_event) => {
+                let ok = unsafe { ll::SDL_PushEvent(&raw_event) == 1 };
+                if ok { Ok(()) }
+                else { Err(get_error()) }
+            },
+            None => {
+                Err(format!("Cannot push unsupported event type to the queue"))
+            }
+        }
+    }
 
-/// Set the state of processing events.
-pub fn set_event_state(_type: EventType, state: bool) {
-    unsafe { ll::SDL_EventState(_type as uint32_t,
-                                state as ll::SDL_EventState); }
-}
+    pub fn wait_event(&mut self) -> Event {
+        unsafe {
+            let raw = mem::uninitialized();
+            let success = ll::SDL_WaitEvent(&raw) == 1;
 
-/// Get the state of processing events.
-pub fn get_event_state(_type: EventType) -> bool {
-    unsafe { ll::SDL_EventState(_type as uint32_t, ll::SDL_QUERY)
-             == ll::SDL_ENABLE }
-}
+            if success { Event::from_ll(&raw) }
+            else { panic!(get_error()) }
+        }
+    }
 
-/// allocate a set of user-defined events, and return the beginning event number for that set of events
-pub fn register_events(num_events: i32) -> Option<u32> {
-    let ret = unsafe { ll::SDL_RegisterEvents(num_events as c_int) };
-    if ret == (-1 as uint32_t) {
-        None
-    } else {
-        Some(ret as u32)
+    pub fn wait_event_timeout(&mut self, timeout: u32) -> Option<Event> {
+        unsafe {
+            let raw = mem::uninitialized();
+            let success = ll::SDL_WaitEventTimeout(&raw, timeout as c_int) == 1;
+
+            if success { Some(Event::from_ll(&raw)) }
+            else { None }
+        }
     }
 }
 
-/// add an event to the event queue
-pub fn push_event(event: Event) -> SdlResult<()> {
-    match event.to_ll() {
-        Some(raw_event) => {
-            let ok = unsafe { ll::SDL_PushEvent(&raw_event) == 1 };
-            if ok { Ok(()) }
-            else { Err(get_error()) }
-        },
-        None => {
-            Err("Unsupport event type to push back to queue.".to_owned())
-        }
+impl Drop for EventQueue {
+    fn drop(&mut self) {
+        use std::sync::atomic::Ordering;
+
+        let was_alive = IS_EVENT_QUEUE_ALIVE.swap(false, Ordering::Relaxed);
+        assert_eq!(was_alive, true);
+    }
+}
+
+pub struct EventQueuePollIterator<'a> {
+    event_queue: &'a mut EventQueue
+}
+
+impl<'a> Iterator for EventQueuePollIterator<'a> {
+    pub type Item = Event;
+
+    fn next(&mut self) -> Option<Event> {
+        self.event_queue.poll_event()
     }
 }
