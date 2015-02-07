@@ -965,6 +965,26 @@ impl EventQueue {
             else { None }
         }
     }
+
+    /// Returns a waiting iterator that calls `wait_event()`.
+    ///
+    /// Note: The iterator will never terminate.
+    pub fn wait_iter(&mut self) -> EventQueueWaitIterator {
+        EventQueueWaitIterator {
+            event_queue: self
+        }
+    }
+
+    /// Returns a waiting iterator that calls `wait_event_timeout()`.
+    ///
+    /// Note: The iterator will never terminate, unless waiting for an event
+    /// exceeds the specified timeout.
+    pub fn wait_timeout_iter(&mut self, timeout: u32) -> EventQueueWaitTimeoutIterator {
+        EventQueueWaitTimeoutIterator {
+            event_queue: self,
+            timeout: timeout
+        }
+    }
 }
 
 impl Drop for EventQueue {
@@ -976,6 +996,7 @@ impl Drop for EventQueue {
     }
 }
 
+#[must_use = "iterators are lazy and do nothing unless consumed"]
 pub struct EventQueuePollIterator<'a> {
     event_queue: &'a mut EventQueue
 }
@@ -986,4 +1007,25 @@ impl<'a> Iterator for EventQueuePollIterator<'a> {
     fn next(&mut self) -> Option<Event> {
         self.event_queue.poll_event()
     }
+}
+
+#[must_use = "iterators are lazy and do nothing unless consumed"]
+pub struct EventQueueWaitIterator<'a> {
+    event_queue: &'a mut EventQueue
+}
+
+impl<'a> Iterator for EventQueueWaitIterator<'a> {
+    pub type Item = Event;
+    fn next(&mut self) -> Option<Event> { Some(self.event_queue.wait_event()) }
+}
+
+#[must_use = "iterators are lazy and do nothing unless consumed"]
+pub struct EventQueueWaitTimeoutIterator<'a> {
+    event_queue: &'a mut EventQueue,
+    timeout: u32
+}
+
+impl<'a> Iterator for EventQueueWaitTimeoutIterator<'a> {
+    pub type Item = Event;
+    fn next(&mut self) -> Option<Event> { self.event_queue.wait_event_timeout(self.timeout) }
 }
