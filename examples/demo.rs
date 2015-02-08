@@ -3,7 +3,7 @@ extern crate sdl2;
 use sdl2::video::{Window, WindowPos, OPENGL};
 use sdl2::render::{RenderDriverIndex, ACCELERATED, Renderer};
 use sdl2::pixels::Color;
-use sdl2::event::EventQueue;
+use sdl2::event::EventPump;
 use sdl2::keycode::KeyCode;
 
 pub fn main() {
@@ -24,11 +24,11 @@ pub fn main() {
     drawer.clear();
     drawer.present();
 
-    let mut event_queue = EventQueue::new();
+    let mut event_pump = EventPump::new();
     let mut running = true;
 
     while running {
-        for event in event_queue.poll_iter() {
+        for event in event_pump.poll_iter() {
             use sdl2::event::Event;
 
             match event {

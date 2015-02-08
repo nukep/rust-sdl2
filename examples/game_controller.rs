@@ -2,7 +2,7 @@
 extern crate sdl2;
 
 use sdl2::{joystick, controller};
-use sdl2::event::EventQueue;
+use sdl2::event::EventPump;
 use sdl2::controller::GameController;
 use std::num::SignedInt;
 
@@ -49,9 +49,9 @@ fn main() {
 
     println!("Controller mapping: {}", controller.mapping());
 
-    let mut event_queue = EventQueue::new();
+    let mut event_pump = EventPump::new();
 
-    for event in event_queue.wait_iter() {
+    for event in event_pump.wait_iter() {
         use sdl2::event::Event;
 
         match event {

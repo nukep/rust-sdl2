@@ -2,7 +2,7 @@
 extern crate sdl2;
 
 use sdl2::joystick::{Joystick, num_joysticks};
-use sdl2::event::EventQueue;
+use sdl2::event::EventPump;
 use std::num::SignedInt;
 
 fn main() {
@@ -35,9 +35,9 @@ fn main() {
         panic!("Couldn't open any joystick");
     };
 
-    let mut event_queue = EventQueue::new();
+    let mut event_pump = EventPump::new();
 
-    for event in event_queue.wait_iter() {
+    for event in event_pump.wait_iter() {
         use sdl2::event::Event;
 
         match event {

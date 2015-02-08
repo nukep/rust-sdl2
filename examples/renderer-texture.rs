@@ -4,7 +4,7 @@ use sdl2::video::{Window, WindowPos, OPENGL};
 use sdl2::render::{RenderDriverIndex, ACCELERATED, Renderer};
 use sdl2::pixels::PixelFormatEnum;
 use sdl2::rect::Rect;
-use sdl2::event::EventQueue;
+use sdl2::event::EventPump;
 use sdl2::event::Event::{Quit, KeyDown};
 use sdl2::keycode::KeyCode;
 
@@ -40,11 +40,11 @@ pub fn main() {
     drawer.copy_ex(&texture, None, Some(Rect::new(450, 100, 256, 256)), 30.0, None, (false, false));
     drawer.present();
 
-    let mut event_queue = EventQueue::new();
+    let mut event_pump = EventPump::new();
     let mut running = true;
 
     while running {
-        for event in event_queue.poll_iter() {
+        for event in event_pump.poll_iter() {
             use sdl2::event::Event;
 
             match event {

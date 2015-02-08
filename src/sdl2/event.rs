@@ -843,75 +843,32 @@ impl Event {
     }
 }
 
-/// A data type representing the SDL's event queue
+/// A thread-safe type that encapsulates functions that call `SDL_PumpEvents()`.
 
-// The event queue _cannot_ be copied, regardless of what the lint thinks!
+// The type _cannot_ be copied, regardless of what the lint thinks!
 #[allow(missing_copy_implementations)]
-pub struct EventQueue;
+pub struct EventPump;
 
-/// Prevents the event queue from moving to other threads.
-/// The event queue cannot be updated (without locks) on a non-main thread.
-impl !Send for EventQueue {}
-
-/// Allows the event queue to be read from other threads.
-/// `EventQueue::peek_events()` can be used, for example.
-unsafe impl Sync for EventQueue {}
+/// Prevents the event pump from moving to other threads.
+/// SDL events can only be pumped on the main thread.
+impl !Send for EventPump {}
 
 /// Set to false by default (not alive).
-static IS_EVENT_QUEUE_ALIVE: AtomicBool = ATOMIC_BOOL_INIT;
+static IS_EVENT_PUMP_ALIVE: AtomicBool = ATOMIC_BOOL_INIT;
 
-impl EventQueue {
+impl EventPump {
     /// # Panic
-    /// The method will panic if an existing EventQueue is alive in the
+    /// The method will panic if an existing EventPump is alive in the
     /// application.
-    pub fn new() -> EventQueue {
+    pub fn new() -> EventPump {
         use std::sync::atomic::Ordering;
 
-        let was_alive = IS_EVENT_QUEUE_ALIVE.swap(true, Ordering::Relaxed);
+        let was_alive = IS_EVENT_PUMP_ALIVE.swap(true, Ordering::Relaxed);
 
         if was_alive {
-            panic!("Cannot have more than one `EventQueue` in use at the same time")
+            panic!("Cannot have more than one `EventPump` in use at the same time")
         } else {
-            EventQueue
-        }
-    }
-
-    pub fn flush_event(&self, event_type: EventType) {
-        unsafe { ll::SDL_FlushEvent(event_type as uint32_t) };
-    }
-
-    pub fn flush_events(&self, min_type: u32, max_type: u32) {
-        unsafe { ll::SDL_FlushEvents(min_type, max_type) };
-    }
-
-    pub fn peek_events<B>(&self, max_amount: u32) -> B
-    where B: FromIterator<Event>
-    {
-        unsafe {
-            let mut events = Vec::with_capacity(max_amount as usize);
-
-            let result = {
-                let events_ptr = events.as_mut_slice().as_mut_ptr();
-
-                ll::SDL_PeepEvents(
-                    events_ptr,
-                    max_amount as c_int,
-                    ll::SDL_PEEKEVENT,
-                    ll::SDL_FIRSTEVENT,
-                    ll::SDL_LASTEVENT
-                )
-            };
-
-            if result < 0 {
-                // The only error possible is "Couldn't lock event queue"
-                panic!(get_error());
-            } else {
-                events.set_len(max_amount as usize);
-
-                events.iter().map(|event_raw| {
-                    Event::from_ll(event_raw)
-                }).collect()
-            }
+            EventPump
         }
     }
 
@@ -923,27 +880,14 @@ impl EventQueue {
         else { None }
     }
 
-    pub fn poll_iter(&mut self) -> EventQueuePollIterator {
-        EventQueuePollIterator {
-            event_queue: self
+    pub fn poll_iter(&mut self) -> EventPollIterator {
+        EventPollIterator {
+            event_pump: self
         }
     }
 
     pub fn pump_events(&mut self) {
         unsafe { ll::SDL_PumpEvents(); };
-    }
-
-    pub fn push_event(&self, event: Event) -> SdlResult<()> {
-        match event.to_ll() {
-            Some(raw_event) => {
-                let ok = unsafe { ll::SDL_PushEvent(&raw_event) == 1 };
-                if ok { Ok(()) }
-                else { Err(get_error()) }
-            },
-            None => {
-                Err(format!("Cannot push unsupported event type to the queue"))
-            }
-        }
     }
 
     pub fn wait_event(&mut self) -> Event {
@@ -969,9 +913,9 @@ impl EventQueue {
     /// Returns a waiting iterator that calls `wait_event()`.
     ///
     /// Note: The iterator will never terminate.
-    pub fn wait_iter(&mut self) -> EventQueueWaitIterator {
-        EventQueueWaitIterator {
-            event_queue: self
+    pub fn wait_iter(&mut self) -> EventWaitIterator {
+        EventWaitIterator {
+            event_pump: self
         }
     }
 
@@ -979,53 +923,105 @@ impl EventQueue {
     ///
     /// Note: The iterator will never terminate, unless waiting for an event
     /// exceeds the specified timeout.
-    pub fn wait_timeout_iter(&mut self, timeout: u32) -> EventQueueWaitTimeoutIterator {
-        EventQueueWaitTimeoutIterator {
-            event_queue: self,
+    pub fn wait_timeout_iter(&mut self, timeout: u32) -> EventWaitTimeoutIterator {
+        EventWaitTimeoutIterator {
+            event_pump: self,
             timeout: timeout
         }
     }
 }
 
-impl Drop for EventQueue {
+impl Drop for EventPump {
     fn drop(&mut self) {
         use std::sync::atomic::Ordering;
 
-        let was_alive = IS_EVENT_QUEUE_ALIVE.swap(false, Ordering::Relaxed);
+        let was_alive = IS_EVENT_PUMP_ALIVE.swap(false, Ordering::Relaxed);
         assert_eq!(was_alive, true);
     }
 }
 
 #[must_use = "iterators are lazy and do nothing unless consumed"]
-pub struct EventQueuePollIterator<'a> {
-    event_queue: &'a mut EventQueue
+pub struct EventPollIterator<'a> {
+    event_pump: &'a mut EventPump
 }
 
-impl<'a> Iterator for EventQueuePollIterator<'a> {
+impl<'a> Iterator for EventPollIterator<'a> {
     pub type Item = Event;
 
     fn next(&mut self) -> Option<Event> {
-        self.event_queue.poll_event()
+        self.event_pump.poll_event()
     }
 }
 
 #[must_use = "iterators are lazy and do nothing unless consumed"]
-pub struct EventQueueWaitIterator<'a> {
-    event_queue: &'a mut EventQueue
+pub struct EventWaitIterator<'a> {
+    event_pump: &'a mut EventPump
 }
 
-impl<'a> Iterator for EventQueueWaitIterator<'a> {
+impl<'a> Iterator for EventWaitIterator<'a> {
     pub type Item = Event;
-    fn next(&mut self) -> Option<Event> { Some(self.event_queue.wait_event()) }
+    fn next(&mut self) -> Option<Event> { Some(self.event_pump.wait_event()) }
 }
 
 #[must_use = "iterators are lazy and do nothing unless consumed"]
-pub struct EventQueueWaitTimeoutIterator<'a> {
-    event_queue: &'a mut EventQueue,
+pub struct EventWaitTimeoutIterator<'a> {
+    event_pump: &'a mut EventPump,
     timeout: u32
 }
 
-impl<'a> Iterator for EventQueueWaitTimeoutIterator<'a> {
+impl<'a> Iterator for EventWaitTimeoutIterator<'a> {
     pub type Item = Event;
-    fn next(&mut self) -> Option<Event> { self.event_queue.wait_event_timeout(self.timeout) }
+    fn next(&mut self) -> Option<Event> { self.event_pump.wait_event_timeout(self.timeout) }
+}
+
+pub fn flush_event(event_type: EventType) {
+    unsafe { ll::SDL_FlushEvent(event_type as uint32_t) };
+}
+
+pub fn flush_events(min_type: u32, max_type: u32) {
+    unsafe { ll::SDL_FlushEvents(min_type, max_type) };
+}
+
+pub fn peek_events<B>(max_amount: u32) -> B
+where B: FromIterator<Event>
+{
+    unsafe {
+        let mut events = Vec::with_capacity(max_amount as usize);
+
+        let result = {
+            let events_ptr = events.as_mut_slice().as_mut_ptr();
+
+            ll::SDL_PeepEvents(
+                events_ptr,
+                max_amount as c_int,
+                ll::SDL_PEEKEVENT,
+                ll::SDL_FIRSTEVENT,
+                ll::SDL_LASTEVENT
+            )
+        };
+
+        if result < 0 {
+            // The only error possible is "Couldn't lock event queue"
+            panic!(get_error());
+        } else {
+            events.set_len(max_amount as usize);
+
+            events.iter().map(|event_raw| {
+                Event::from_ll(event_raw)
+            }).collect()
+        }
+    }
+}
+
+pub fn push_event(event: Event) -> SdlResult<()> {
+    match event.to_ll() {
+        Some(raw_event) => {
+            let ok = unsafe { ll::SDL_PushEvent(&raw_event) == 1 };
+            if ok { Ok(()) }
+            else { Err(get_error()) }
+        },
+        None => {
+            Err(format!("Cannot push unsupported event type to the queue"))
+        }
+    }
 }
