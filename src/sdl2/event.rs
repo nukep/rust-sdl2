@@ -843,7 +843,7 @@ impl Event {
     }
 }
 
-/// A thread-safe type that encapsulates functions that call `SDL_PumpEvents()`.
+/// A thread-safe type that encapsulates event-pumping functions.
 
 // The type _cannot_ be copied, regardless of what the lint thinks!
 #[allow(missing_copy_implementations)]
@@ -872,6 +872,9 @@ impl EventPump {
         }
     }
 
+    /// Polls for currently pending events.
+    ///
+    /// If no events are pending, `None` is returned.
     pub fn poll_event(&mut self) -> Option<Event> {
         let raw = unsafe { mem::uninitialized() };
         let has_pending = unsafe { ll::SDL_PollEvent(&raw) == 1 as c_int };
@@ -880,16 +883,34 @@ impl EventPump {
         else { None }
     }
 
+    /// Returns a polling iterator that calls `poll_event()`.
+    /// The iterator will terminate once there are no more pending events.
+    ///
+    /// # Example
+    /// ```no_run
+    /// use sdl2::event::EventPump;
+    ///
+    /// let mut event_pump = EventPump::new();
+    /// for event in event_pump.poll_iter() {
+    ///     use sdl2::event::Event;
+    ///     match event {
+    ///         Event::KeyDown {..} => { /*...*/ },
+    ///         _ => ()
+    ///     }
+    /// }
+    /// ```
     pub fn poll_iter(&mut self) -> EventPollIterator {
         EventPollIterator {
             event_pump: self
         }
     }
 
+    /// Pumps the event loop, gathering events from the input devices.
     pub fn pump_events(&mut self) {
         unsafe { ll::SDL_PumpEvents(); };
     }
 
+    /// Waits indefinitely for the next available event.
     pub fn wait_event(&mut self) -> Event {
         unsafe {
             let raw = mem::uninitialized();
@@ -900,6 +921,7 @@ impl EventPump {
         }
     }
 
+    /// Waits until the specified timeout (in milliseconds) for the next available event.
     pub fn wait_event_timeout(&mut self, timeout: u32) -> Option<Event> {
         unsafe {
             let raw = mem::uninitialized();
