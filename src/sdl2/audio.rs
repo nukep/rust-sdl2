@@ -58,10 +58,11 @@ use std::marker::PhantomData;
 use get_error;
 use rwops::RWops;
 use SdlResult;
+use util::CStringExt;
 
 use sys::audio as ll;
 
-#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug, Hash)]
 pub enum AudioFormat {
     /// Unsigned 8-bit samples
     U8 = ll::AUDIO_U8 as isize,
@@ -133,7 +134,7 @@ impl AudioFormat {
 }
 
 #[repr(C)]
-#[derive(Copy, Clone, PartialEq, Hash, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum AudioStatus {
     Stopped = ll::SDL_AUDIO_STOPPED as isize,
     Playing = ll::SDL_AUDIO_PLAYING as isize,
@@ -178,8 +179,8 @@ pub fn get_audio_device_name(index: i32, iscapture: i32) -> String {
 }
 
 pub fn audio_init(name: &str) -> SdlResult<()> {
-    let buf = CString::new(name.as_bytes()).unwrap().as_ptr();
-    let ret = unsafe { ll::SDL_AudioInit(buf) };
+    let name = try!(CString::new(name).unwrap_or_sdlresult());
+    let ret = unsafe { ll::SDL_AudioInit(name.as_ptr()) };
 
     if ret == 0 {
         Ok(())
@@ -208,14 +209,14 @@ pub struct AudioSpecWAV {
 }
 
 impl AudioSpecWAV {
-    /// Loads a WAVE from the file path. Uses `SDL_LoadWAV_RW`.
-    pub fn load_wav(path: &Path) -> SdlResult<AudioSpecWAV> {
-        let ops = try!(RWops::from_file(path, "rb"));
-        AudioSpecWAV::load_wav_rw(&ops)
+    /// Loads a WAVE from the file path.
+    pub fn load_wav<P: AsRef<Path>>(path: P) -> SdlResult<AudioSpecWAV> {
+        let mut file = try!(RWops::from_file(path, "rb"));
+        AudioSpecWAV::load_wav_rw(&mut file)
     }
 
-    /// Loads a WAVE from the data source. Uses `SDL_LoadWAV_RW`.
-    pub fn load_wav_rw(src: &RWops) -> SdlResult<AudioSpecWAV> {
+    /// Loads a WAVE from the data source.
+    pub fn load_wav_rw(src: &mut RWops) -> SdlResult<AudioSpecWAV> {
         use std::mem::uninitialized;
         use std::ptr::null_mut;
 
@@ -355,7 +356,7 @@ impl AudioSpecDesired {
 }
 
 #[allow(missing_copy_implementations)]
-#[derive(Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub struct AudioSpec {
     pub freq: i32,
     pub format: AudioFormat,
@@ -412,7 +413,6 @@ impl<CB: AudioCallback> AudioDevice<CB> {
     {
         use std::mem;
         use std::ptr::null;
-        use libc::c_char;
 
         // SDL_OpenAudioDevice needs a userdata pointer, but we can't initialize the
         // callback without the obtained AudioSpec.
@@ -425,16 +425,14 @@ impl<CB: AudioCallback> AudioDevice<CB> {
 
         let mut obtained = unsafe { mem::uninitialized::<ll::SDL_AudioSpec>() };
         unsafe {
-            let device_cstr: Option<CString> = match device {
-                None => None,
-                Some(d) => Some(CString::new(d.as_bytes()).unwrap())
+            let device = match device {
+                Some(device) => Some(try!(CString::new(device).unwrap_or_sdlresult())),
+                None => None
             };
-            let device_cstr_ptr: *const c_char = match device_cstr {
-                None => null(),
-                Some(ref s) => s.as_ptr()
-            };
+            let device_ptr = device.map_or(null(), |s| s.as_ptr());
+
             let iscapture_flag = 0;
-            let device_id = ll::SDL_OpenAudioDevice(device_cstr_ptr, iscapture_flag, &desired, &mut obtained, 0);
+            let device_id = ll::SDL_OpenAudioDevice(device_ptr, iscapture_flag, &desired, &mut obtained, 0);
             match device_id {
                 0 => {
                     Err(get_error())

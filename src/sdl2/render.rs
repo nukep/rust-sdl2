@@ -28,7 +28,7 @@
 //! None of the draw methods in `RenderDrawer` are expected to fail.
 //! If they do, a panic is raised and the program is aborted.
 
-use event::EventPump;
+use Sdl;
 use video::{Window, WindowProperties, WindowPropertiesGetters};
 use surface;
 use surface::Surface;
@@ -49,7 +49,7 @@ use std::rc::Rc;
 
 use sys::render as ll;
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum TextureAccess {
     Static = ll::SDL_TEXTUREACCESS_STATIC as isize,
     Streaming = ll::SDL_TEXTUREACCESS_STREAMING as isize,
@@ -73,7 +73,7 @@ impl FromPrimitive for TextureAccess {
 
 /// A structure that contains information on the capabilities of a render driver
 /// or the current render context.
-#[derive(PartialEq)]
+#[derive(Clone, Eq, PartialEq, Hash, Debug)]
 pub struct RendererInfo {
     pub name: String,
     pub flags: u32,
@@ -82,7 +82,7 @@ pub struct RendererInfo {
     pub max_texture_height: i32
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum BlendMode {
     None = ll::SDL_BLENDMODE_NONE as isize,
     Blend = ll::SDL_BLENDMODE_BLEND as isize,
@@ -258,20 +258,20 @@ impl<'a> Renderer<'a> {
 
     /// Accesses the Window properties, such as the position, size and title of a Window.
     /// Returns None if the renderer is not associated with a Window.
-    pub fn window_properties<'b>(&'b mut self, event: &'b EventPump) -> Option<WindowProperties<'b>>
+    pub fn window_properties<'b>(&'b mut self, sdl: &'b Sdl) -> Option<WindowProperties<'b>>
     {
         match self.parent.as_mut() {
-            Some(&mut RendererParent::Window(ref mut window)) => Some(window.properties(event)),
+            Some(&mut RendererParent::Window(ref mut window)) => Some(window.properties(sdl)),
             _ => None
         }
     }
 
     /// Accesses the Window getters, such as the position, size and title of a Window.
     /// Returns None if the renderer is not associated with a Window.
-    pub fn window_properties_getters<'b>(&'b self, event: &'b EventPump) -> Option<WindowPropertiesGetters<'b>>
+    pub fn window_properties_getters(&self) -> Option<WindowPropertiesGetters>
     {
         match self.parent.as_ref() {
-            Some(&RendererParent::Window(ref window)) => Some(window.properties_getters(event)),
+            Some(&RendererParent::Window(ref window)) => Some(window.properties_getters()),
             _ => None
         }
     }
@@ -871,7 +871,7 @@ impl<'renderer> RenderTarget<'renderer> {
     }
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub struct TextureQuery {
     pub format: pixels::PixelFormatEnum,
     pub access: TextureAccess,

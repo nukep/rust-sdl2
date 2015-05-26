@@ -1,12 +1,11 @@
 use libc::{c_void, c_int, c_float, uint32_t};
-use std::ffi::{CStr, CString, NulError};
+use std::ffi::{CStr, CString};
 use std::marker::PhantomData;
 use std::mem;
 use std::ops::Deref;
 use std::ptr;
 use std::vec::Vec;
 
-use event::EventPump;
 use rect::Rect;
 use render::RendererBuilder;
 use surface::Surface;
@@ -14,12 +13,13 @@ use pixels;
 use Sdl;
 use SdlResult;
 use num::FromPrimitive;
+use util::CStringExt;
 
 use get_error;
 
 use sys::video as ll;
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum GLProfile {
     /// OpenGL core profile - deprecated functions are disabled
     Core,
@@ -320,7 +320,7 @@ pub mod gl_attr {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub struct DisplayMode {
     pub format: u32,
     pub w: i32,
@@ -358,14 +358,14 @@ impl DisplayMode {
     }
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum FullscreenType {
     FTOff = 0,
     FTTrue = 0x00000001,
     FTDesktop = 0x00001001,
 }
 
-#[derive(PartialEq, Copy, Clone)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum WindowPos {
     PosUndefined,
     PosCentered,
@@ -445,7 +445,7 @@ impl WindowBuilder {
     /// Initializes a new `WindowBuilder`.
     pub fn new(_sdl: &Sdl, title: &str, width: u32, height: u32) -> WindowBuilder {
         WindowBuilder {
-            title: CString::new(title).unwrap(),
+            title: CString::new(title).remove_nul(),
             width: width,
             height: height,
             x: WindowPos::PosUndefined,
@@ -569,20 +569,19 @@ impl Window {
     ///
     /// In order to access a Window's properties, it must be guaranteed that the
     /// event loop is not running.
-    /// This is why a reference to the application's `EventPump` is required
-    /// (a shared `EventPump` reference is only obtainable if it's not being mutated).
-    /// Event pumping could otherwise mutate a Window's properties without your consent!
+    /// This is why a reference to the application's SDL context is required
+    /// (a shared `Sdl` reference is only obtainable if the event loop is not running).
+    /// The event loop could otherwise mutate a Window's properties without your consent!
     ///
     /// # Example
     /// ```no_run
     /// let mut sdl_context = sdl2::init().everything().unwrap();
     /// let mut window = sdl_context.window("My SDL window", 800, 600).build().unwrap();
-    /// let mut event_pump = sdl_context.event_pump();
     ///
     /// loop {
     ///     let mut pos = None;
     ///
-    ///     for event in event_pump.poll_iter() {
+    ///     for event in sdl_context.event_pump().poll_iter() {
     ///         use sdl2::event::Event;
     ///         match event {
     ///             Event::MouseMotion { x, y, .. } => { pos = Some((x, y)); },
@@ -592,18 +591,19 @@ impl Window {
     ///
     ///     if let Some((x, y)) = pos {
     ///         // Set the window title
-    ///         window.properties(&event_pump).set_title(&format!("{}, {}", x, y));
+    ///         window.properties(&sdl_context).set_title(&format!("{}, {}", x, y));
     ///     }
     /// }
     /// ```
-    pub fn properties<'a>(&'a mut self, _event: &'a EventPump) -> WindowProperties<'a> {
+    pub fn properties<'a>(&'a mut self, _sdl: &'a Sdl) -> WindowProperties<'a> {
         WindowProperties {
             raw: self.raw,
             _marker: PhantomData
         }
     }
 
-    pub fn properties_getters<'a>(&'a self, _event: &'a EventPump) -> WindowPropertiesGetters<'a> {
+    /// Accesses the read-only Window properties.
+    pub fn properties_getters(&self) -> WindowPropertiesGetters {
         WindowPropertiesGetters {
             window_properties: WindowProperties {
                 raw: self.raw,
@@ -725,10 +725,9 @@ impl<'a> WindowProperties<'a> {
         }
     }
 
-    pub fn set_title(&mut self, title: &str) -> Result<(), NulError> {
-        let buff = try!(CString::new(title)).as_ptr();
-        unsafe { ll::SDL_SetWindowTitle(self.raw, buff); }
-        Ok(())
+    pub fn set_title(&mut self, title: &str) {
+        let title = CString::new(title).remove_nul();
+        unsafe { ll::SDL_SetWindowTitle(self.raw, title.as_ptr()); }
     }
 
     pub fn get_title(&self) -> &str {
@@ -943,13 +942,14 @@ pub fn get_video_driver(id: i32) -> String {
     }
 }
 
-pub fn video_init(name: &str) -> Result<bool, NulError> {
-    let buf =
-    match CString::new(name) {
-        Ok(s) => s.as_ptr(),
-        Err(e) => return Err(e),
-    };
-    Ok(unsafe { ll::SDL_VideoInit(buf) == 0 })
+pub fn video_init(name: &str) -> SdlResult<()> {
+    let name = try!(CString::new(name).unwrap_or_sdlresult());
+    let result = unsafe { ll::SDL_VideoInit(name.as_ptr()) };
+    if result == 0 {
+        Ok(())
+    } else {
+        Err(get_error())
+    }
 }
 
 pub fn video_quit() {
@@ -1057,10 +1057,11 @@ pub fn disable_screen_saver() {
     unsafe { ll::SDL_DisableScreenSaver() }
 }
 
-pub fn gl_load_library(path: &str) -> SdlResult<()> {
+pub fn gl_load_library<P: AsRef<::std::path::Path>>(path: P) -> SdlResult<()> {
     unsafe {
-        let path = CString::new(path).unwrap().as_ptr();
-        if ll::SDL_GL_LoadLibrary(path) == 0 {
+        // TODO: use OsStr::to_cstring() once it's stable
+        let path = CString::new(path.as_ref().to_str().unwrap()).unwrap();
+        if ll::SDL_GL_LoadLibrary(path.as_ptr()) == 0 {
             Ok(())
         } else {
             Err(get_error())
@@ -1073,23 +1074,19 @@ pub fn gl_unload_library() {
 }
 
 pub fn gl_get_proc_address(procname: &str) -> *const c_void {
-    unsafe {
-        let procname =
-        match CString::new(procname) {
-            Ok(s) => s.as_ptr(),
-            Err(_) => return 0 as *const c_void,
-        };
-        ll::SDL_GL_GetProcAddress(procname)
+    match CString::new(procname) {
+        Ok(procname) => unsafe { ll::SDL_GL_GetProcAddress(procname.as_ptr()) },
+        // string contains a nul byte - it won't match anything.
+        Err(_) => ptr::null()
     }
 }
 
-pub fn gl_extension_supported(extension: &str) -> Result<bool, NulError> {
-    let buff =
+pub fn gl_extension_supported(extension: &str) -> bool {
     match CString::new(extension) {
-        Ok(s) => s.as_ptr(),
-        Err(e) => return Err(e),
-    };
-    Ok(unsafe { ll::SDL_GL_ExtensionSupported(buff) == 1 })
+        Ok(extension) => unsafe { ll::SDL_GL_ExtensionSupported(extension.as_ptr()) != 0 },
+        // string contains a nul byte - it won't match anything.
+        Err(_) => false
+    }
 }
 
 pub unsafe fn gl_get_current_window() -> SdlResult<Window> {

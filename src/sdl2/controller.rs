@@ -1,14 +1,15 @@
 use libc::{c_int, c_char};
-use std::ffi::{CString, CStr, NulError};
+use std::ffi::{CString, CStr};
 
 use SdlResult;
 use {get_error, clear_error};
 use joystick;
+use util::CStringExt;
 
 use sys::controller as ll;
 use sys::event::{SDL_QUERY, SDL_ENABLE};
 
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(i32)]
 pub enum Axis {
     Invalid      = ll::SDL_CONTROLLER_AXIS_INVALID,
@@ -23,16 +24,14 @@ pub enum Axis {
 impl Axis {
     /// Return the Axis from a string description in the same format
     /// used by the game controller mapping strings.
-    pub fn from_string(axis: &str) -> Result<Axis, NulError> {
-        let name_c =
-        match CString::new(axis) {
-            Ok(s) => s.as_ptr(),
-            Err(e) => return Err(e),
+    pub fn from_string(axis: &str) -> Axis {
+        let id = match CString::new(axis) {
+            Ok(axis) => unsafe { ll::SDL_GameControllerGetAxisFromString(axis.as_ptr()) },
+            // string contains a nul byte - it won't match anything.
+            Err(_) => ll::SDL_CONTROLLER_AXIS_INVALID
         };
 
-        let id = unsafe { ll::SDL_GameControllerGetAxisFromString(name_c) };
-
-        Ok(wrap_controller_axis(id as u8))
+        wrap_controller_axis(id as u8)
     }
 
     /// Return a string for a given axis in the same format using by
@@ -58,7 +57,7 @@ pub fn wrap_controller_axis(bitflags: u8) -> Axis {
     }
 }
 
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 #[repr(i32)]
 pub enum Button {
     Invalid       = ll::SDL_CONTROLLER_BUTTON_INVALID,
@@ -82,16 +81,14 @@ pub enum Button {
 impl Button {
     /// Return the Button from a string description in the same format
     /// used by the game controller mapping strings.
-    pub fn from_string(button: &str) -> Result<Button, NulError> {
-        let name_c =
-        match CString::new(button) {
-            Ok(s) => s.as_ptr(),
-            Err(e) => return Err(e),
+    pub fn from_string(button: &str) -> Button {
+        let id = match CString::new(button) {
+            Ok(button) => unsafe { ll::SDL_GameControllerGetButtonFromString(button.as_ptr()) },
+            // string contains a nul byte - it won't match anything.
+            Err(_) => ll::SDL_CONTROLLER_BUTTON_INVALID
         };
 
-        let id = unsafe { ll::SDL_GameControllerGetButtonFromString(name_c) };
-
-        Ok(wrap_controller_button(id as u8))
+        wrap_controller_button(id as u8)
     }
 
     /// Return a string for a given button in the same format using by
@@ -156,7 +153,7 @@ pub fn get_event_state() -> bool {
 }
 
 /// Possible return values for `add_mapping`
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum MappingStatus {
     Added   = 1,
     Updated = 0,
@@ -164,9 +161,9 @@ pub enum MappingStatus {
 
 /// Add a new mapping from a mapping string
 pub fn add_mapping(mapping: &str) -> SdlResult<MappingStatus> {
-    let mapping_c = CString::new(mapping).unwrap().as_ptr();
+    let mapping = try!(CString::new(mapping).unwrap_or_sdlresult());
 
-    let result = unsafe { ll::SDL_GameControllerAddMapping(mapping_c) };
+    let result = unsafe { ll::SDL_GameControllerAddMapping(mapping.as_ptr()) };
 
     match result {
         1 => Ok(MappingStatus::Added),

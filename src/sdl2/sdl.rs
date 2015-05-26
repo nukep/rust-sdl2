@@ -4,8 +4,9 @@ use std::marker::PhantomData;
 use sys::sdl as ll;
 use event::EventPump;
 use video::WindowBuilder;
+use util::CStringExt;
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum Error {
     NoMemError = ll::SDL_ENOMEM as isize,
     ReadError = ll::SDL_EFREAD as isize,
@@ -49,8 +50,8 @@ impl Sdl {
     }
 
     /// Obtains the SDL event pump.
-    pub fn event_pump(&self) -> EventPump {
-        unsafe { EventPump::_unchecked_new() }
+    pub fn event_pump(&mut self) -> EventPump {
+        EventPump::new(self)
     }
 
     /// Initializes a new `WindowBuilder`; a convenience method that calls `WindowBuilder::new()`.
@@ -192,10 +193,9 @@ impl InitBuilder {
 ///
 /// # Example
 /// ```no_run
-/// let sdl_context = sdl2::init().everything().unwrap();
+/// let mut sdl_context = sdl2::init().everything().unwrap();
 ///
-/// let mut event_pump = sdl_context.event_pump();
-/// for event in event_pump.poll_iter() {
+/// for event in sdl_context.event_pump().poll_iter() {
 ///     // ...
 /// }
 ///
@@ -211,8 +211,8 @@ pub fn get_error() -> String {
 }
 
 pub fn set_error(err: &str) {
-    let buf = CString::new(err).unwrap().as_ptr();
-    unsafe { ll::SDL_SetError(buf); }
+    let err = CString::new(err).remove_nul();
+    unsafe { ll::SDL_SetError(err.as_ptr()); }
 }
 
 pub fn set_error_from_code(err: Error) {
