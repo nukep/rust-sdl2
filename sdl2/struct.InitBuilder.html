@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `InitBuilder` struct in crate `sdl2`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, InitBuilder">
+
+    <title>sdl2::InitBuilder - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='index.html'>sdl2</a></p><script>window.sidebarCurrent = {name: 'InitBuilder', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>sdl2</a>::<wbr><a class='struct' href=''>InitBuilder</a><wbr></span><span class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-62572' href='../src/sdl2/sdl.rs.html#95-97'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct InitBuilder {
+    // some fields omitted
+}</pre><div class='docblock'><p>The type that allows you to build the SDL2 context.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../sdl2/struct.InitBuilder.html' title='sdl2::InitBuilder'>InitBuilder</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../sdl2/struct.InitBuilder.html' title='sdl2::InitBuilder'>InitBuilder</a></code></h4>
+<div class='docblock'><p>Initializes a new <code>InitBuilder</code>.</p>
+</div><h4 id='method.build' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.build' class='fnname'>build</a>(&amp;self) -&gt; <a class='type' href='../sdl2/type.SdlResult.html' title='sdl2::SdlResult'>SdlResult</a>&lt;<a class='struct' href='../sdl2/struct.Sdl.html' title='sdl2::Sdl'>Sdl</a>&gt;</code></h4>
+<div class='docblock'><p>Builds the SDL2 context.</p>
+</div><h4 id='method.unwrap' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.unwrap' class='fnname'>unwrap</a>(&amp;self) -&gt; <a class='struct' href='../sdl2/struct.Sdl.html' title='sdl2::Sdl'>Sdl</a></code></h4>
+<div class='docblock'><p>Builds the SDL2 context. Convenience method for <code>.build().unwrap()</code>.</p>
+
+<p>Panics if there was an error initializing SDL2.</p>
+</div><h4 id='method.build_subsystem' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.build_subsystem' class='fnname'>build_subsystem</a>(&amp;self, _sdl: &amp;<a class='struct' href='../sdl2/struct.Sdl.html' title='sdl2::Sdl'>Sdl</a>) -&gt; <a class='type' href='../sdl2/type.SdlResult.html' title='sdl2::SdlResult'>SdlResult</a>&lt;<a class='struct' href='../sdl2/struct.Subsystem.html' title='sdl2::Subsystem'>Subsystem</a>&gt;</code></h4>
+<div class='docblock'><p>Builds an SDL2 subsystem. Requires SDL2 to have already been initialized.</p>
+</div><h4 id='method.everything' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.everything' class='fnname'>everything</a>(&amp;mut self) -&gt; &amp;mut <a class='struct' href='../sdl2/struct.InitBuilder.html' title='sdl2::InitBuilder'>InitBuilder</a></code></h4>
+<div class='docblock'><p>Initializes every subsystem.</p>
+</div><h4 id='method.timer' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.timer' class='fnname'>timer</a>(&amp;mut self) -&gt; &amp;mut <a class='struct' href='../sdl2/struct.InitBuilder.html' title='sdl2::InitBuilder'>InitBuilder</a></code></h4>
+<div class='docblock'><p>Initializes the timer subsystem.</p>
+</div><h4 id='method.audio' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.audio' class='fnname'>audio</a>(&amp;mut self) -&gt; &amp;mut <a class='struct' href='../sdl2/struct.InitBuilder.html' title='sdl2::InitBuilder'>InitBuilder</a></code></h4>
+<div class='docblock'><p>Initializes the audio subsystem.</p>
+</div><h4 id='method.video' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.video' class='fnname'>video</a>(&amp;mut self) -&gt; &amp;mut <a class='struct' href='../sdl2/struct.InitBuilder.html' title='sdl2::InitBuilder'>InitBuilder</a></code></h4>
+<div class='docblock'><p>Initializes the video subsystem.</p>
+</div><h4 id='method.joystick' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.joystick' class='fnname'>joystick</a>(&amp;mut self) -&gt; &amp;mut <a class='struct' href='../sdl2/struct.InitBuilder.html' title='sdl2::InitBuilder'>InitBuilder</a></code></h4>
+<div class='docblock'><p>Initializes the joystick subsystem.</p>
+</div><h4 id='method.haptic' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.haptic' class='fnname'>haptic</a>(&amp;mut self) -&gt; &amp;mut <a class='struct' href='../sdl2/struct.InitBuilder.html' title='sdl2::InitBuilder'>InitBuilder</a></code></h4>
+<div class='docblock'><p>Initializes the haptic (force feedback) subsystem.</p>
+</div><h4 id='method.game_controller' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.game_controller' class='fnname'>game_controller</a>(&amp;mut self) -&gt; &amp;mut <a class='struct' href='../sdl2/struct.InitBuilder.html' title='sdl2::InitBuilder'>InitBuilder</a></code></h4>
+<div class='docblock'><p>Initializes the controller subsystem.</p>
+</div><h4 id='method.events' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.events' class='fnname'>events</a>(&amp;mut self) -&gt; &amp;mut <a class='struct' href='../sdl2/struct.InitBuilder.html' title='sdl2::InitBuilder'>InitBuilder</a></code></h4>
+<div class='docblock'><p>Initializes the events subsystem.</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "sdl2";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script async src="../search-index.js"></script>
+</body>
+</html>

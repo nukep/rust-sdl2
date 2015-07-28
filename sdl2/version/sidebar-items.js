@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["get_revision","Get the code revision of SDL that is linked against your program."],["get_revision_number","Get the revision number of SDL that is linked against your program."],["get_version","Get the version of SDL that is linked against your program."]],"struct":[["Version","A structure that contains information about the version of SDL in use."]]});

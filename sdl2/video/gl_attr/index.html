@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `gl_attr` mod in crate `sdl2`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, gl_attr">
+
+    <title>sdl2::video::gl_attr - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../../index.html'>sdl2</a>::<wbr><a href='../index.html'>video</a></p><script>window.sidebarCurrent = {name: 'gl_attr', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../../index.html'>sdl2</a>::<wbr><a href='../index.html'>video</a>::<wbr><a class='mod' href=''>gl_attr</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-48205' class='srclink' href='../../../src/sdl2/video.rs.html#123-323' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>OpenGL context getters and setters</p>
+
+<h1 id="example" class='section-header'><a
+                           href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='kw'>use</span> <span class='ident'>sdl2</span>::<span class='ident'>video</span>::{<span class='ident'>GLProfile</span>, <span class='ident'>gl_attr</span>};
+
+<span class='kw'>let</span> <span class='ident'>sdl_context</span> <span class='op'>=</span> <span class='ident'>sdl2</span>::<span class='ident'>init</span>().<span class='ident'>unwrap</span>();
+<span class='kw'>let</span> <span class='ident'>video_subsystem</span> <span class='op'>=</span> <span class='ident'>sdl_context</span>.<span class='ident'>video</span>().<span class='ident'>unwrap</span>();
+
+<span class='comment'>// Don&#39;t use deprecated OpenGL functions</span>
+<span class='ident'>gl_attr</span>::<span class='ident'>set_context_profile</span>(<span class='ident'>GLProfile</span>::<span class='ident'>Core</span>);
+
+<span class='comment'>// Set the context into debug mode</span>
+<span class='ident'>gl_attr</span>::<span class='ident'>set_context_flags</span>().<span class='ident'>debug</span>().<span class='ident'>set</span>();
+
+<span class='comment'>// Set the OpenGL context version (OpenGL 3.2)</span>
+<span class='ident'>gl_attr</span>::<span class='ident'>set_context_version</span>(<span class='number'>3</span>, <span class='number'>2</span>);
+
+<span class='comment'>// Enable anti-aliasing</span>
+<span class='ident'>gl_attr</span>::<span class='ident'>set_multisample_buffers</span>(<span class='number'>1</span>);
+<span class='ident'>gl_attr</span>::<span class='ident'>set_multisample_samples</span>(<span class='number'>4</span>);
+
+<span class='kw'>let</span> <span class='ident'>window</span> <span class='op'>=</span> <span class='ident'>video_subsystem</span>.<span class='ident'>window</span>(<span class='string'>&quot;rust-sdl2 demo: Video&quot;</span>, <span class='number'>800</span>, <span class='number'>600</span>).<span class='ident'>opengl</span>().<span class='ident'>build</span>().<span class='ident'>unwrap</span>();
+
+<span class='comment'>// Yes, we&#39;re still using the Core profile</span>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>gl_attr</span>::<span class='ident'>context_profile</span>(), <span class='ident'>GLProfile</span>::<span class='ident'>Core</span>);
+<span class='comment'>// ... and we&#39;re still using OpenGL 3.2</span>
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>gl_attr</span>::<span class='ident'>context_version</span>(), (<span class='number'>3</span>, <span class='number'>2</span>));
+</pre>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.ContextFlags.html'
+                               title='sdl2::video::gl_attr::ContextFlags'>ContextFlags</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.ContextFlagsBuilder.html'
+                               title='sdl2::video::gl_attr::ContextFlagsBuilder'>ContextFlagsBuilder</a></td>
+                        <td class='docblock short'>
+                             <p>The type that allows you to build a OpenGL context configuration.</p>
+
+                        </td>
+                    </tr>
+                </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.accelerated_visual.html'
+                               title='sdl2::video::gl_attr::accelerated_visual'>accelerated_visual</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+whether to require hardware acceleration; false to force software rendering; defaults to allow either</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.accum_alpha_size.html'
+                               title='sdl2::video::gl_attr::accum_alpha_size'>accum_alpha_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+the minimum number of bits for the alpha channel of the accumulation buffer; defaults to 0</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.accum_blue_size.html'
+                               title='sdl2::video::gl_attr::accum_blue_size'>accum_blue_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+the minimum number of bits for the blue channel of the accumulation buffer; defaults to 0</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.accum_green_size.html'
+                               title='sdl2::video::gl_attr::accum_green_size'>accum_green_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+the minimum number of bits for the green channel of the accumulation buffer; defaults to 0</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.accum_red_size.html'
+                               title='sdl2::video::gl_attr::accum_red_size'>accum_red_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+the minimum number of bits for the red channel of the accumulation buffer; defaults to 0</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.alpha_size.html'
+                               title='sdl2::video::gl_attr::alpha_size'>alpha_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+the minimum number of bits for the alpha channel of the color buffer; defaults to 0</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.blue_size.html'
+                               title='sdl2::video::gl_attr::blue_size'>blue_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+the minimum number of bits for the blue channel of the color buffer; defaults to 2</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.buffer_size.html'
+                               title='sdl2::video::gl_attr::buffer_size'>buffer_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+the minimum number of bits for frame buffer size; defaults to 0</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.context_flags.html'
+                               title='sdl2::video::gl_attr::context_flags'>context_flags</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the applied OpenGL context configuration flags.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.context_major_version.html'
+                               title='sdl2::video::gl_attr::context_major_version'>context_major_version</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+OpenGL context major version</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.context_minor_version.html'
+                               title='sdl2::video::gl_attr::context_minor_version'>context_minor_version</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+OpenGL context minor version</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.context_profile.html'
+                               title='sdl2::video::gl_attr::context_profile'>context_profile</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+type of GL context (Core, Compatibility, ES)</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.context_version.html'
+                               title='sdl2::video::gl_attr::context_version'>context_version</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the OpenGL context major and minor versions as a tuple.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.depth_size.html'
+                               title='sdl2::video::gl_attr::depth_size'>depth_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+the minimum number of bits in the depth buffer; defaults to 16</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.double_buffer.html'
+                               title='sdl2::video::gl_attr::double_buffer'>double_buffer</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+whether the output is single or double buffered; defaults to double buffering on</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.framebuffer_srgb_compatible.html'
+                               title='sdl2::video::gl_attr::framebuffer_srgb_compatible'>framebuffer_srgb_compatible</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+requests sRGB capable visual; defaults to false (&gt;= SDL 2.0.1)</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.green_size.html'
+                               title='sdl2::video::gl_attr::green_size'>green_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+the minimum number of bits for the green channel of the color buffer; defaults to 3</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.multisample_buffers.html'
+                               title='sdl2::video::gl_attr::multisample_buffers'>multisample_buffers</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+the number of buffers used for multisample anti-aliasing; defaults to 0</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.multisample_samples.html'
+                               title='sdl2::video::gl_attr::multisample_samples'>multisample_samples</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+the number of samples used around the current pixel used for multisample anti-aliasing; defaults to 0</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.red_size.html'
+                               title='sdl2::video::gl_attr::red_size'>red_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+the minimum number of bits for the red channel of the color buffer; defaults to 3</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_accelerated_visual.html'
+                               title='sdl2::video::gl_attr::set_accelerated_visual'>set_accelerated_visual</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+whether to require hardware acceleration; false to force software rendering; defaults to allow either</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_accum_alpha_size.html'
+                               title='sdl2::video::gl_attr::set_accum_alpha_size'>set_accum_alpha_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+the minimum number of bits for the alpha channel of the accumulation buffer; defaults to 0</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_accum_blue_size.html'
+                               title='sdl2::video::gl_attr::set_accum_blue_size'>set_accum_blue_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+the minimum number of bits for the blue channel of the accumulation buffer; defaults to 0</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_accum_green_size.html'
+                               title='sdl2::video::gl_attr::set_accum_green_size'>set_accum_green_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+the minimum number of bits for the green channel of the accumulation buffer; defaults to 0</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_accum_red_size.html'
+                               title='sdl2::video::gl_attr::set_accum_red_size'>set_accum_red_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+the minimum number of bits for the red channel of the accumulation buffer; defaults to 0</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_alpha_size.html'
+                               title='sdl2::video::gl_attr::set_alpha_size'>set_alpha_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+the minimum number of bits for the alpha channel of the color buffer; defaults to 0</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_blue_size.html'
+                               title='sdl2::video::gl_attr::set_blue_size'>set_blue_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+the minimum number of bits for the blue channel of the color buffer; defaults to 2</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_buffer_size.html'
+                               title='sdl2::video::gl_attr::set_buffer_size'>set_buffer_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+the minimum number of bits for frame buffer size; defaults to 0</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_context_flags.html'
+                               title='sdl2::video::gl_attr::set_context_flags'>set_context_flags</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> any combination of OpenGL context configuration flags.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_context_major_version.html'
+                               title='sdl2::video::gl_attr::set_context_major_version'>set_context_major_version</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+OpenGL context major version</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_context_minor_version.html'
+                               title='sdl2::video::gl_attr::set_context_minor_version'>set_context_minor_version</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+OpenGL context minor version</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_context_profile.html'
+                               title='sdl2::video::gl_attr::set_context_profile'>set_context_profile</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+type of GL context (Core, Compatibility, ES)</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_context_version.html'
+                               title='sdl2::video::gl_attr::set_context_version'>set_context_version</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the OpenGL context major and minor versions.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_depth_size.html'
+                               title='sdl2::video::gl_attr::set_depth_size'>set_depth_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+the minimum number of bits in the depth buffer; defaults to 16</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_double_buffer.html'
+                               title='sdl2::video::gl_attr::set_double_buffer'>set_double_buffer</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+whether the output is single or double buffered; defaults to double buffering on</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_framebuffer_srgb_compatible.html'
+                               title='sdl2::video::gl_attr::set_framebuffer_srgb_compatible'>set_framebuffer_srgb_compatible</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+requests sRGB capable visual; defaults to false (&gt;= SDL 2.0.1)</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_green_size.html'
+                               title='sdl2::video::gl_attr::set_green_size'>set_green_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+the minimum number of bits for the green channel of the color buffer; defaults to 3</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_multisample_buffers.html'
+                               title='sdl2::video::gl_attr::set_multisample_buffers'>set_multisample_buffers</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+the number of buffers used for multisample anti-aliasing; defaults to 0</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_multisample_samples.html'
+                               title='sdl2::video::gl_attr::set_multisample_samples'>set_multisample_samples</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+the number of samples used around the current pixel used for multisample anti-aliasing; defaults to 0</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_red_size.html'
+                               title='sdl2::video::gl_attr::set_red_size'>set_red_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+the minimum number of bits for the red channel of the color buffer; defaults to 3</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_share_with_current_context.html'
+                               title='sdl2::video::gl_attr::set_share_with_current_context'>set_share_with_current_context</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+OpenGL context sharing; defaults to false</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_stencil_size.html'
+                               title='sdl2::video::gl_attr::set_stencil_size'>set_stencil_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+the minimum number of bits in the stencil buffer; defaults to 0</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.set_stereo.html'
+                               title='sdl2::video::gl_attr::set_stereo'>set_stereo</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Sets</strong> the attribute:
+whether the output is stereo 3D; defaults to off</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.share_with_current_context.html'
+                               title='sdl2::video::gl_attr::share_with_current_context'>share_with_current_context</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+OpenGL context sharing; defaults to false</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.stencil_size.html'
+                               title='sdl2::video::gl_attr::stencil_size'>stencil_size</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+the minimum number of bits in the stencil buffer; defaults to 0</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.stereo.html'
+                               title='sdl2::video::gl_attr::stereo'>stereo</a></td>
+                        <td class='docblock short'>
+                             <p><strong>Gets</strong> the attribute:
+whether the output is stereo 3D; defaults to off</p>
+
+                        </td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../../";
+        window.currentCrate = "sdl2";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
+    
+    <script async src="../../../search-index.js"></script>
+</body>
+</html>

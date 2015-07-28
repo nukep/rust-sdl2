@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `WindowPropertiesGetters` struct in crate `sdl2`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, WindowPropertiesGetters">
+
+    <title>sdl2::video::WindowPropertiesGetters - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>sdl2</a>::<wbr><a href='index.html'>video</a></p><script>window.sidebarCurrent = {name: 'WindowPropertiesGetters', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>sdl2</a>::<wbr><a href='index.html'>video</a>::<wbr><a class='struct' href=''>WindowPropertiesGetters</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-54339' class='srclink' href='../../src/sdl2/video.rs.html#746-748' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct WindowPropertiesGetters&lt;'a&gt; {
+    // some fields omitted
+}</pre><div class='docblock'><p>Contains getters to a <code>Window</code>&#39;s properties.</p>
+
+<p>This type acts as an immutable guard to <code>WindowProperties</code> using <code>Deref</code>.</p>
+</div><h2 id='deref-methods'>Methods from <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.Deref.html' title='core::ops::Deref'>Deref</a>&lt;Target=<a class='struct' href='../../sdl2/video/struct.WindowProperties.html' title='sdl2::video::WindowProperties'>WindowProperties</a>&lt;'a&gt;&gt;</h2><div class='impl-items'><h4 id='method.get_display_index' class='method'><code>fn <a href='#method.get_display_index' class='fnname'>get_display_index</a>(&amp;self) -&gt; <a class='type' href='../../sdl2/type.SdlResult.html' title='sdl2::SdlResult'>SdlResult</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>&gt;</code></h4>
+<h4 id='method.set_display_mode' class='method'><code>fn <a href='#method.set_display_mode' class='fnname'>set_display_mode</a>(&amp;mut self, display_mode: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../sdl2/video/struct.DisplayMode.html' title='sdl2::video::DisplayMode'>DisplayMode</a>&gt;) -&gt; <a class='type' href='../../sdl2/type.SdlResult.html' title='sdl2::SdlResult'>SdlResult</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<h4 id='method.get_display_mode' class='method'><code>fn <a href='#method.get_display_mode' class='fnname'>get_display_mode</a>(&amp;self) -&gt; <a class='type' href='../../sdl2/type.SdlResult.html' title='sdl2::SdlResult'>SdlResult</a>&lt;<a class='struct' href='../../sdl2/video/struct.DisplayMode.html' title='sdl2::video::DisplayMode'>DisplayMode</a>&gt;</code></h4>
+<h4 id='method.get_window_pixel_format' class='method'><code>fn <a href='#method.get_window_pixel_format' class='fnname'>get_window_pixel_format</a>(&amp;self) -&gt; <a class='enum' href='../../sdl2/pixels/enum.PixelFormatEnum.html' title='sdl2::pixels::PixelFormatEnum'>PixelFormatEnum</a></code></h4>
+<h4 id='method.get_window_flags' class='method'><code>fn <a href='#method.get_window_flags' class='fnname'>get_window_flags</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a></code></h4>
+<h4 id='method.set_title' class='method'><code>fn <a href='#method.set_title' class='fnname'>set_title</a>(&amp;mut self, title: &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>)</code></h4>
+<h4 id='method.get_title' class='method'><code>fn <a href='#method.get_title' class='fnname'>get_title</a>(&amp;self) -&gt; &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>
+<h4 id='method.set_icon' class='method'><code>fn <a href='#method.set_icon' class='fnname'>set_icon</a>&lt;S: <a class='trait' href='http://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html' title='core::convert::AsRef'>AsRef</a>&lt;<a class='struct' href='../../sdl2/surface/struct.SurfaceRef.html' title='sdl2::surface::SurfaceRef'>SurfaceRef</a>&gt;&gt;(&amp;mut self, icon: S)</code></h4>
+<h4 id='method.set_position' class='method'><code>fn <a href='#method.set_position' class='fnname'>set_position</a>(&amp;mut self, x: <a class='enum' href='../../sdl2/video/enum.WindowPos.html' title='sdl2::video::WindowPos'>WindowPos</a>, y: <a class='enum' href='../../sdl2/video/enum.WindowPos.html' title='sdl2::video::WindowPos'>WindowPos</a>)</code></h4>
+<h4 id='method.get_position' class='method'><code>fn <a href='#method.get_position' class='fnname'>get_position</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, <a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</a></code></h4>
+<h4 id='method.set_size' class='method'><code>fn <a href='#method.set_size' class='fnname'>set_size</a>(&amp;mut self, w: <a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, h: <a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</code></h4>
+<h4 id='method.get_size' class='method'><code>fn <a href='#method.get_size' class='fnname'>get_size</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, <a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</a></code></h4>
+<h4 id='method.get_drawable_size' class='method'><code>fn <a href='#method.get_drawable_size' class='fnname'>get_drawable_size</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, <a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</a></code></h4>
+<h4 id='method.set_minimum_size' class='method'><code>fn <a href='#method.set_minimum_size' class='fnname'>set_minimum_size</a>(&amp;mut self, w: <a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, h: <a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</code></h4>
+<h4 id='method.get_minimum_size' class='method'><code>fn <a href='#method.get_minimum_size' class='fnname'>get_minimum_size</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, <a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</a></code></h4>
+<h4 id='method.set_maximum_size' class='method'><code>fn <a href='#method.set_maximum_size' class='fnname'>set_maximum_size</a>(&amp;mut self, w: <a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, h: <a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</code></h4>
+<h4 id='method.get_maximum_size' class='method'><code>fn <a href='#method.get_maximum_size' class='fnname'>get_maximum_size</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, <a href='http://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>)</a></code></h4>
+<h4 id='method.set_bordered' class='method'><code>fn <a href='#method.set_bordered' class='fnname'>set_bordered</a>(&amp;mut self, bordered: <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
+<h4 id='method.show' class='method'><code>fn <a href='#method.show' class='fnname'>show</a>(&amp;mut self)</code></h4>
+<h4 id='method.hide' class='method'><code>fn <a href='#method.hide' class='fnname'>hide</a>(&amp;mut self)</code></h4>
+<h4 id='method.raise' class='method'><code>fn <a href='#method.raise' class='fnname'>raise</a>(&amp;mut self)</code></h4>
+<h4 id='method.maximize' class='method'><code>fn <a href='#method.maximize' class='fnname'>maximize</a>(&amp;mut self)</code></h4>
+<h4 id='method.minimize' class='method'><code>fn <a href='#method.minimize' class='fnname'>minimize</a>(&amp;mut self)</code></h4>
+<h4 id='method.restore' class='method'><code>fn <a href='#method.restore' class='fnname'>restore</a>(&amp;mut self)</code></h4>
+<h4 id='method.set_fullscreen' class='method'><code>fn <a href='#method.set_fullscreen' class='fnname'>set_fullscreen</a>(&amp;mut self, fullscreen_type: <a class='enum' href='../../sdl2/video/enum.FullscreenType.html' title='sdl2::video::FullscreenType'>FullscreenType</a>) -&gt; <a class='type' href='../../sdl2/type.SdlResult.html' title='sdl2::SdlResult'>SdlResult</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<h4 id='method.get_surface' class='method'><code>fn <a href='#method.get_surface' class='fnname'>get_surface</a>(&amp;self) -&gt; <a class='type' href='../../sdl2/type.SdlResult.html' title='sdl2::SdlResult'>SdlResult</a>&lt;&amp;<a class='struct' href='../../sdl2/surface/struct.SurfaceRef.html' title='sdl2::surface::SurfaceRef'>SurfaceRef</a>&gt;</code></h4>
+<h4 id='method.get_surface_mut' class='method'><code>fn <a href='#method.get_surface_mut' class='fnname'>get_surface_mut</a>(&amp;mut self) -&gt; <a class='type' href='../../sdl2/type.SdlResult.html' title='sdl2::SdlResult'>SdlResult</a>&lt;&amp;mut <a class='struct' href='../../sdl2/surface/struct.SurfaceRef.html' title='sdl2::surface::SurfaceRef'>SurfaceRef</a>&gt;</code></h4>
+<h4 id='method.update_surface' class='method'><code>fn <a href='#method.update_surface' class='fnname'>update_surface</a>(&amp;self) -&gt; <a class='type' href='../../sdl2/type.SdlResult.html' title='sdl2::SdlResult'>SdlResult</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<h4 id='method.update_surface_rects' class='method'><code>fn <a href='#method.update_surface_rects' class='fnname'>update_surface_rects</a>(&amp;self, rects: <a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='../../sdl2/rect/struct.Rect.html' title='sdl2::rect::Rect'>Rect</a><a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='type' href='../../sdl2/type.SdlResult.html' title='sdl2::SdlResult'>SdlResult</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<h4 id='method.set_grab' class='method'><code>fn <a href='#method.set_grab' class='fnname'>set_grab</a>(&amp;mut self, grabbed: <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>)</code></h4>
+<h4 id='method.get_grab' class='method'><code>fn <a href='#method.get_grab' class='fnname'>get_grab</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.set_brightness' class='method'><code>fn <a href='#method.set_brightness' class='fnname'>set_brightness</a>(&amp;mut self, brightness: <a href='http://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>) -&gt; <a class='type' href='../../sdl2/type.SdlResult.html' title='sdl2::SdlResult'>SdlResult</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<h4 id='method.get_brightness' class='method'><code>fn <a href='#method.get_brightness' class='fnname'>get_brightness</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a></code></h4>
+<h4 id='method.set_gamma_ramp' class='method'><code>fn <a href='#method.set_gamma_ramp' class='fnname'>set_gamma_ramp</a>(&amp;mut self, red: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.array.html'>[<a href='http://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>; 256]</a>&gt;, green: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.array.html'>[<a href='http://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>; 256]</a>&gt;, blue: <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.array.html'>[<a href='http://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>; 256]</a>&gt;) -&gt; <a class='type' href='../../sdl2/type.SdlResult.html' title='sdl2::SdlResult'>SdlResult</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt;</code></h4>
+<h4 id='method.get_gamma_ramp' class='method'><code>fn <a href='#method.get_gamma_ramp' class='fnname'>get_gamma_ramp</a>(&amp;self) -&gt; <a class='type' href='../../sdl2/type.SdlResult.html' title='sdl2::SdlResult'>SdlResult</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>&gt;, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>&gt;, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.u16.html'>u16</a>&gt;)</a>&gt;</code></h4>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl&lt;'a&gt; <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.Deref.html' title='core::ops::Deref'>Deref</a> for <a class='struct' href='../../sdl2/video/struct.WindowPropertiesGetters.html' title='sdl2::video::WindowPropertiesGetters'>WindowPropertiesGetters</a>&lt;'a&gt;</code></h3><div class='impl-items'><h4 id='assoc_type.Target' class='type'><code>type Target = <a class='struct' href='../../sdl2/video/struct.WindowProperties.html' title='sdl2::video::WindowProperties'>WindowProperties</a>&lt;'a&gt;</code></h4>
+<h4 id='method.deref' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/ops/trait.Deref.html#method.deref' class='fnname'>deref</a>(&amp;self) -&gt; &amp;<a class='struct' href='../../sdl2/video/struct.WindowProperties.html' title='sdl2::video::WindowProperties'>WindowProperties</a>&lt;'a&gt;</code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+            <p>
+                Search functions by type signature (e.g.
+                <code>vec -> usize</code>)
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "sdl2";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>
